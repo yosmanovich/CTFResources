@@ -15,7 +15,7 @@ if (Test-Path -Path "../Configuration/$Environment.json")
 {
     az config set extension.use_dynamic_install=yes_without_prompt
 
-    $EnvironmentSettings = (Get-Content "../Infrastructure/Configuration/$Environment.json" -Raw) | ConvertFrom-Json
+    $EnvironmentSettings = (Get-Content "../Configuration/$Environment.json" -Raw) | ConvertFrom-Json
     
     $resourceGroupName = az group show --name  $($EnvironmentSettings.ResourceGroupName) --query name -o tsv
     if ($null -eq $resourceGroupName)
@@ -74,7 +74,7 @@ if (Test-Path -Path "../Configuration/$Environment.json")
     $upn = az containerapp env identity show --name $($EnvironmentSettings.ContainerAppsEnvironmentName) --resource-group $($EnvironmentSettings.ResourceGroupName) --query principalId -o tsv
     az role assignment $command --role "AcrPull" --assignee $upn --scope $scope --output none   
 
-    ./Build-Containers.ps1 
+    ./Build-Containers.ps1 -Environment $Environment -AzureDeployment $true 
 
     $ContainerRegistryAddress = $($EnvironmentSettings.ContainerRegistryName).toLower()+".azurecr.io"
     az deployment group $command --name $($EnvironmentSettings.ContainerAppLLM) `
@@ -85,7 +85,7 @@ if (Test-Path -Path "../Configuration/$Environment.json")
         --parameters "managedenvironment_name=$($EnvironmentSettings.ContainerAppsEnvironmentName)" `
         --parameters "registry=$ContainerRegistryAddress"
 
-    az deployment group $command --name $($EnvironmentSettings.ContainerAppGUI) `
+    az deployment group $command --name "ContainerApp" `
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
         --template-file "../Infrastructure/Templates/ContainerApp.json" `
         --parameters "../Infrastructure/Parameters/ContainerApp.$($EnvironmentSettings.ContainerAppGUI).parameters.json" `

@@ -16,23 +16,32 @@
         "value": ""
     },
     "target_port": {
-        "value": 8081
+        "value": 8080
     },
     "env": 
     {
       "value": [
         {
-          "name": "API_KEY",
-          "value": "FAKE_KEY"
-        },
-        {
-          "name": "BASE_URL",
-          "value": "http://ollama/v1"
-        },                
-        {
-          "name": "MODEL",
-          "value": "TinyLlama:latest"
+          "name": "OLLAMA_API_BASE_URL",
+          "value": "http://ollama/api"
         }
+      ]
+    },    
+    "volume_mounts":{
+      "value": [
+        {
+          "volumeName": "openwebui-data",
+          "mountPath": "/app/backend/data"
+        }      
+      ]
+    },    
+    "volumes":{
+      "value": [
+        {
+          "name": "openwebui-data",
+          "storageType": "AzureFile",
+          "storageName": "openwebui-data"
+        }      
       ]
     }
   }

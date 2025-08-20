@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "../../Configuration"
+		},
+		{
+			"path": "../../Containers"
+		},
+		{
+			"path": "../../DeploymentScripts"
+		},
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../src"
+		}
+	]
+}

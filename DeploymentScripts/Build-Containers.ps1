@@ -1,7 +1,9 @@
 param(
     [Parameter()]    
     [ValidateSet('Dev','Test','Staging','Prod')]
-    [string]$Environment = "Dev"
+    [string]$Environment = "Dev",
+    [switch]$AzureDeployment = $false
+
 )
 
 if (Test-Path -Path "../Configuration/$Environment.json")
@@ -12,11 +14,12 @@ if (Test-Path -Path "../Configuration/$Environment.json")
     "acrName=$ContainerRegistryAddress" | Out-File -FilePath "..\Containers\.env"
 
     docker compose -f ../Containers/docker-compose.yaml up -d --build 
-    az acr login --name $ContainerRegistryAddress
-    docker push $ContainerRegistryAddress/ollama:ollama
-    docker push $ContainerRegistryAddress/ollama-proxy:ollama-proxy
-    docker push $ContainerRegistryAddress/chainlit:chainlit    
-    docker push $ContainerRegistryAddress/ollama-gui:ollama-gui
-    
-    
+    if ($AzureDeployment -eq $true)
+    {
+        az acr login --name $ContainerRegistryAddress
+        docker push $ContainerRegistryAddress/ollama:ollama
+        docker push $ContainerRegistryAddress/ollama-proxy:ollama-proxy
+        docker push $ContainerRegistryAddress/chainlit:chainlit    
+        docker push $ContainerRegistryAddress/ollama-gui:ollama-gui
+    }    
 }
