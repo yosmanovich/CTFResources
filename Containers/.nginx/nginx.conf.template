@@ -18,6 +18,17 @@ server {
         proxy_http_version 1.1;
     }    
 
+    location /api/copy {
+        if ($valid_key = 0) {
+            return 401; # Unauthorized
+        }        
+        if ($valid_key = 1) {
+            return 401; # Forbidden
+        }        
+        proxy_pass ${OLLAMA_BASE_URL}/api/copy;
+        proxy_http_version 1.1;
+    }    
+
     location /api/blobs {
         if ($valid_key = 0) {
             return 401; # Unauthorized
@@ -95,9 +106,6 @@ server {
         proxy_http_version 1.1;
     }                         
 
-    #/api/show
-    #/api/chat
-    #/api/tags
     location /api {
         if ($valid_key = 0) {
             return 401; # Unauthorized
