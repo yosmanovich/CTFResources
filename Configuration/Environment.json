@@ -1,0 +1,14 @@
+{
+  "Environment": "AzureCloud",
+  "Location": "East US",
+  "ResourceGroupName": "<enter your resource group name>",
+  "KeyVaultName": "<enter your key vault name>",  
+  "LogAnalyticsName": "<enter your log analytics name>",
+  "StorageAccountName": "<enter your storage account name>",
+  "ContainerAppsEnvironmentName":"<enter your container apps environment name>",
+  "ContainerRegistryName":"<enter your container registry name>",
+  "ContainerAppLLM":"ollama",
+  "ContainerAppGUI":"ollama-gui",
+  "ContainerChainlit":"chainlit",
+  "ContainerAppProxy":"ollama-proxy"
+}

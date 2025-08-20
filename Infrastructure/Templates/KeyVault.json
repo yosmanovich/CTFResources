@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "vaultName": {
+        "defaultValue": "",
+        "type": "string"
+      },
+      "vaultSuffix": {
+        "defaultValue": "",
+        "type": "string"
+      },
+      "tags": {
+        "type": "object",
+        "defaultValue": {}
+      },            
+      "secrets": {
+        "defaultValue": [],
+        "type": "array"
+      }
+    },
+    "variables": {
+      "location": "[resourceGroup().location]",
+      "tenantId": "[subscription().tenantId]",
+      "subscriptionId": "[subscription().subscriptionId]",
+      "resourceGroupName": "[resourceGroup().name]"
+    },
+    "resources": [
+      {
+        "type": "Microsoft.KeyVault/vaults",
+        "apiVersion": "2021-11-01-preview",
+        "name": "[parameters('vaultName')]",
+        "location": "[variables('Location')]",
+        "tags": "[parameters('tags')]",        
+        "properties": {
+          "sku": {
+            "family": "A",
+            "name": "Standard"
+          },
+          "tenantId": "[variables('tenantId')]",
+          "accessPolicies": [            
+          ],
+          "enabledForDeployment": false,
+          "enabledForDiskEncryption": false,
+          "enabledForTemplateDeployment": false,
+          "enableSoftDelete": true,
+          "enableRbacAuthorization": true,
+          "vaultUri": "[concat('https://',parameters('vaultName'),'.vault.azure.',parameters('vaultSuffix'),'/')]",
+          "provisioningState": "Succeeded",
+          "publicNetworkAccess": "Enabled"
+        }
+      },
+      {
+        "type": "Microsoft.KeyVault/vaults/secrets",
+        "apiVersion": "2021-11-01-preview",
+        "name": "[concat(parameters('vaultName'), parameters('secrets')[copyIndex()][0])]",        
+        "copy":
+        {
+            "name": "secretsCopy",
+            "count": "[length(parameters('secrets'))]"
+        },           
+        "location": "[variables('Location')]",
+        "dependsOn": [
+          "[resourceId('Microsoft.KeyVault/vaults', parameters('vaultName'))]"
+        ],
+        "properties": {
+          "value": "[parameters('secrets')[copyIndex()][1]]",
+          "attributes": {
+            "enabled": true
+          }
+        }
+      }
+    ]
+  }

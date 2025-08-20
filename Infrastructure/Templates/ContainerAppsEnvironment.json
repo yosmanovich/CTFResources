@@ -1,0 +1,94 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "ContainerAppsEnvironment_name": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        "workspaceName" : {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "accountName" : {
+            "defaultValue": "",
+            "type": "string"
+        },                
+        "storage": {
+            "defaultValue": [],
+            "type": "array"
+        }
+    },
+    "variables": {
+		"location": "[resourceGroup().location]",
+		"subscriptionId": "[subscription().subscriptionId]",
+		"resourceGroupName": "[resourceGroup().name]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.App/managedEnvironments",
+            "apiVersion": "2025-02-02-preview",
+            "name": "[parameters('ContainerAppsEnvironment_name')]",
+            "location": "East US",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "appLogsConfiguration": {
+                    "destination": "log-analytics",
+                    "logAnalyticsConfiguration": {
+                        "customerId": "[reference(concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2020-08-01').customerId]",
+                        "sharedKey": "[listKeys(concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2020-08-01').primarySharedKey]"
+                    }                    
+                },
+                "zoneRedundant": false,
+                "kedaConfiguration": {},
+                "daprConfiguration": {},
+                "customDomainConfiguration": {},
+                "workloadProfiles": [
+                    {
+                        "workloadProfileType": "Consumption",
+                        "name": "Consumption",
+                        "enableFips": false
+                    }
+                ],
+                "peerAuthentication": {
+                    "mtls": {
+                        "enabled": false
+                    }
+                },
+                "peerTrafficConfiguration": {
+                    "encryption": {
+                        "enabled": false
+                    }
+                },
+                "publicNetworkAccess": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.App/managedEnvironments/storages",
+            "apiVersion": "2025-02-02-preview",
+            "name": "[concat(parameters('ContainerAppsEnvironment_name'), parameters('storage')[copyIndex()]['name'])]",
+            "dependsOn": [
+                "[resourceId('Microsoft.App/managedEnvironments', parameters('ContainerAppsEnvironment_name'))]"
+            ],
+            "properties": {
+                "azureFile": {
+                    "accountName": "[parameters('accountName')]",
+                    "AccountKey": "[listKeys(concat('Microsoft.Storage/storageAccounts/', parameters('accountName')), '2021-04-01').keys[0].value]",
+                    "shareName": "[parameters('storage')[copyIndex()]['shareName']]",
+                    "accessMode": "ReadWrite"
+                }
+            },
+            "copy":
+            {
+                "name": "storageCopy",
+                "count": "[length(parameters('storage'))]"
+            }
+        }
+    ]
+}

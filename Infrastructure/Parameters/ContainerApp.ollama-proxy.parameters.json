@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": 
+  {
+    "containerapp_name": {
+        "value": ""
+    },
+    "managedenvironment_name": {
+        "value": ""
+    },
+    "tags": {
+        "value": {}
+    },
+    "registry": {
+        "value": ""
+    },
+    "identity": {
+        "value": "SystemAssigned"
+    },
+    "secrets": 
+    {
+      "value": [
+        {
+          "name": "user-key",          
+          "value": "init"          
+        },
+        {
+          "name": "admin-key",
+          "value": "init"          
+        }
+      ]
+    },    
+    "env": 
+    {
+      "value": [
+        {
+          "name": "OLLAMA_BASE_URL",
+          "value": "http://ollama"
+        },
+        {
+          "name": "USER_KEY",
+          "secretRef": "user-key"
+        },
+        {
+          "name": "ADMIN_KEY",
+          "secretRef": "admin-key"
+        }
+      ]
+    }
+  }
+}

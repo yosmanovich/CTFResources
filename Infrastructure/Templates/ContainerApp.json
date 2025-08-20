@@ -1,0 +1,148 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "containerapp_name": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "managedenvironment_name": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {}
+        },        
+        "registry": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "secrets": {
+            "defaultValue": [],
+            "type": "array"
+        },                
+        "env": {
+            "defaultValue": [],
+            "type": "array"
+        },
+        "volumes": {
+            "defaultValue": [],
+            "type": "array"
+        },
+        "volume_mounts": {
+            "defaultValue": [],
+            "type": "array"
+        },        
+        "external_ingress": {
+            "defaultValue": true,
+            "type": "bool"
+        },
+        "target_port": {
+            "defaultValue": 80,
+            "type" : "int"
+        },
+        "allow_insecure": {
+            "defaultValue": false,
+            "type": "bool"
+        },        
+        "cpu": {
+            "defaultValue": "0.5",
+            "type" : "string"
+        },
+        "memory": {
+            "defaultValue": "1Gi",
+            "type" : "string"
+        },
+        "identity": {
+            "defaultValue": "None",
+            "type": "string",
+            "allowedValues": ["None", "SystemAssigned", "UserAssigned"]
+        }
+    },
+	"variables": {
+		"location": "[resourceGroup().location]",
+		"subscriptionId": "[subscription().subscriptionId]",
+		"resourceGroupName": "[resourceGroup().name]",
+		"managedEnvironments_id": "[concat('/subscriptions/', variables('subscriptionId'), '/resourceGroups/', variables('resourceGroupName'), '/providers/Microsoft.App/managedEnvironments/', parameters('managedenvironment_name'))]"
+	},
+    "resources": [
+        {
+            "type": "Microsoft.App/containerapps",
+            "apiVersion": "2025-02-02-preview",
+            "name": "[parameters('containerapp_name')]",
+            "location": "[variables('location')]",
+            "kind": "containerapps",
+            "tags": "[parameters('tags')]",
+            "identity": {
+                "type": "[parameters('identity')]"
+            },
+            "properties": {
+                "managedEnvironmentId": "[variables('managedEnvironments_id')]",
+                "environmentId": "[variables('managedEnvironments_id')]",
+                "workloadProfileName": "Consumption",
+                "configuration": {
+                    "secrets": "[parameters('secrets')]",
+                    "activeRevisionsMode": "Single",
+                    "ingress": {
+                        "external": "[parameters('external_ingress')]",
+                        "targetPort": "[parameters('target_port')]",
+                        "exposedPort": 0,
+                        "transport": "Auto",
+                        "traffic": [
+                            {
+                                "weight": 100,
+                                "latestRevision": true
+                            }
+                        ],
+                        "allowInsecure":  "[parameters('allow_insecure')]",
+                        "stickySessions": {
+                            "affinity": "none"
+                        }
+                    },
+                    "registries": [
+                        {
+                            "server": "[parameters('registry')]",
+                            "identity": "system-environment"
+                        }
+                    ],
+                    "identitySettings": [],
+                    "maxInactiveRevisions": 100
+                },
+                "template": {
+                    "containers": [
+                        {
+                            "image": "[concat(parameters('registry'), '/', parameters('containerapp_name'), ':', parameters('containerapp_name'))]",
+                            "imageType": "ContainerImage",
+                            "name": "[parameters('containerapp_name')]",
+                            "env":  "[parameters('env')]",
+                            "resources": {
+                                "cpu": "[parameters('cpu')]",
+                                "memory": "[parameters('memory')]"
+                            },
+                            "probes": [],
+                                "volumeMounts": "[parameters('volume_mounts')]"                     
+                        }
+                    ],
+                    "scale": {
+                        "minReplicas": 1,
+                        "maxReplicas": 10,
+                        "cooldownPeriod": 300,
+                        "pollingInterval": 30,
+                        "rules": [
+                            {
+                                "name": "http-scaler",
+                                "http": {
+                                    "metadata": {
+                                        "concurrentRequests": "10"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "volumes": "[parameters('volumes')]"
+                }
+            }
+        }
+    ]
+}

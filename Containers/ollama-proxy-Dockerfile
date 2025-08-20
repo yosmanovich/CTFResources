@@ -1,0 +1,5 @@
+FROM nginx:latest
+
+RUN apt-get update && apt-get install -y iputils-ping
+
+COPY .nginx/nginx.conf.template /etc/nginx/templates/default.conf.template

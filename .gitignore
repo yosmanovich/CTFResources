@@ -6,9 +6,19 @@ __pycache__/
 # C extensions
 *.so
 
+Configuration/Dev.json
+Configuration/Test.json
+Configuration/Staging.json
+Configuration/Prod.json
+
 # Distribution / packaging
+
+.chainlit/
+chainlit.md
+
 .Python
 build/
+junk/
 develop-eggs/
 dist/
 downloads/

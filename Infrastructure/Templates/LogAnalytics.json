@@ -1,0 +1,46 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "analyticWorkspaceName": {
+        "type": "string",
+        "defaultValue": ""
+      },
+      "analyticWorkspaceSKU": {
+        "type": "string",
+        "defaultValue": "pergb2018"
+      },
+      "tags": {
+        "type": "object",
+        "defaultValue": {}
+      }
+    },
+    "variables": {
+      "location": "[resourceGroup().location]",
+      "subscriptionId": "[subscription().subscriptionId]",
+      "resourceGroupName": "[resourceGroup().name]"
+    },
+    "resources": [
+      {
+        "apiVersion": "2021-12-01-preview",
+        "name": "[parameters('AnalyticWorkspaceName')]",
+        "location": "[variables('Location')]",
+        "tags": "[parameters('tags')]",
+        "type": "Microsoft.OperationalInsights/workspaces",
+        "properties": {
+          "sku": {
+            "name": "[parameters('analyticWorkspaceSKU')]"
+          },
+          "retentionInDays": 30,
+          "features": {
+              "enableLogAccessUsingOnlyResourcePermissions": true
+          },
+          "workspaceCapping": {
+              "dailyQuotaGb": -1
+          },
+          "publicNetworkAccessForIngestion": "Enabled",
+          "publicNetworkAccessForQuery": "Enabled"          
+        }
+      }
+    ]
+  }

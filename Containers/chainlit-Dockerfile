@@ -1,0 +1,12 @@
+FROM python:3.11.10-slim
+
+RUN pip install chainlit
+RUN pip install openai
+RUN pip install python-dotenv
+
+EXPOSE 8081
+
+WORKDIR /app
+COPY ../src/chainlit/app.py .
+
+CMD ["chainlit", "run", "app.py", "--host", "0.0.0.0", "--port", "8081"]

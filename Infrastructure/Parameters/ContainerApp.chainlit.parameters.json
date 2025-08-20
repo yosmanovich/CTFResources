@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": 
+  {
+    "containerapp_name": {
+        "value": ""
+    },
+    "managedenvironment_name": {
+        "value": ""
+    },
+    "tags": {
+        "value": {}
+    },
+    "registry": {
+        "value": ""
+    },
+    "target_port": {
+        "value": 8081
+    },
+    "env": 
+    {
+      "value": [
+        {
+          "name": "API_KEY",
+          "value": "FAKE_KEY"
+        },
+        {
+          "name": "BASE_URL",
+          "value": "http://ollama:11434/v1"
+        },                
+        {
+          "name": "MODEL",
+          "value": "TinyLlama:latest"
+        }
+      ]
+    }
+  }
+}

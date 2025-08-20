@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": 
+  {
+    "containerapp_name": {
+        "value": ""
+    },
+    "managedenvironment_name": {
+        "value": ""
+    },
+    "tags": {
+        "value": {}
+    },
+    "registry": {
+        "value": ""
+    },
+    "target_port": {
+        "value": 8080
+    },
+    "env": 
+    {
+      "value": [
+        {
+          "name": "OLLAMA_API_BASE_URL",
+          "value": "http://ollama/api"
+        }
+      ]
+    },    
+    "volume_mounts":{
+      "value": [
+        {
+          "volumeName": "openwebui-data",
+          "mountPath": "/app/backend/data"
+        }      
+      ]
+    },    
+    "volumes":{
+      "value": [
+        {
+          "name": "openwebui-data",
+          "storageType": "AzureFile",
+          "storageName": "openwebui-data"
+        }      
+      ]
+    }
+  }
+}

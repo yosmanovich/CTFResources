@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": 
+  {
+    "containerapp_name": {
+        "value": ""
+    },
+    "managedenvironment_name": {
+        "value": ""
+    },
+    "tags": {
+        "value": {}
+    },
+    "registry": {
+        "value": ""
+    },
+    "target_port": {
+        "value": 11434
+    },
+    "external_ingress": {
+        "value": false
+    },
+    "cpu": {
+        "value": "1"
+    },
+    "memory": {
+        "value": "2Gi"
+    },           
+    "volume_mounts":{
+      "value": [
+        {
+          "volumeName": "ollama-data",
+          "mountPath": "/root/.ollama"
+        }      
+      ]
+    },    
+    "volumes":{
+      "value": [
+        {
+          "name": "ollama-data",
+          "storageType": "AzureFile",
+          "storageName": "ollama-data"
+        }      
+      ]
+    }
+  }
+}
