@@ -91,7 +91,7 @@ if (Test-Path -Path "../Configuration/$Environment.json")
         --parameters "../Infrastructure/Parameters/ContainerApp.$($EnvironmentSettings.ContainerAppGUI).parameters.json" `
         --parameters "containerapp_name=$($EnvironmentSettings.ContainerAppGUI)" `
         --parameters "managedenvironment_name=$($EnvironmentSettings.ContainerAppsEnvironmentName)" `
-        --parameters "registry=$ContainerRegistryAddress"
+        --parameters "registry=$ContainerRegistryAddress" 
 
     az deployment group $command --name $($EnvironmentSettings.ContainerChainlit)`
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
