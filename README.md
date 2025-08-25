@@ -42,16 +42,13 @@ This project contains ARM templates for hosting several services within Azure, D
     - `ollama-Dockerfile` - The docker file defining what is needed for the Ollama container
     - `ollama-gui-Dockerfile` - The docker file defining what is needed for the Ollama GUI container
     - `ollama-proxy-Dockerfile` - The docker file defining what is needed for the Nginx / Ollama Proxy container
-
+  - `Documentation` - Additional documents for this project
+    - `Media` - Images for the documenation for this project
 ## Prerequisites
 - [Python](https://www.python.org/downloads/)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [AZ CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?view=azure-cli-latest)
 - [Visual Studio Code](https://code.visualstudio.com/)
-
-  ```bash
-  dotnet add package ModelContextProtocol --prerelease
-  ```
 
 ## Create and populate the Configuration file
 Copy the Configuration\Environment.json file to Configuration\Dev.json (or Configuration\Test.json or Configuration\Staging.json or Configuration\Prod.json).
@@ -62,6 +59,39 @@ You must only configure the *ContainerRegistryName* and then run this locally
 For Azure Deployments
 You *must* configure all the properties
 
+## Containers
+
+### Ollama 
+The Ollama container runs the [Ollama application](https://ollama.com/). This provides direct access to LLMS via a mounted volume. Ollama does not provide any authentication capabilities therefore it should not be exposed on the public Internet. The APIs within Ollama enable a non-authenticated user to make any and all function calls to the system including creating and adding additional LLMS. Access to Ollama from the Internet should be done either through the Ollama Proxy or other applications.
+
+The Ollama API may be reviewed at  [Ollama API](https://github.com/ollama/ollama/blob/main/docs/api.md)
+
+### Ollama GUI
+The Ollama GUI container runs the [Ollama GUI application](https://github.com/ollama-webui). This application is also not very secure as users may register themselves and then be given access. T
+
+### Ollama Proxy
+The Ollama Proxy container runs an [NGINX](https://nginx.org/) reverse proxy server. This application retrieves two secrets from an Azure Key Vault to serve as API Keys for accessing the Ollama backend. The two keys are a User Key and an Admin Key and are set when the deployment occurs. A copy of each key presented at the end of the deployment and the keys may be obtained by reviewing the secrets in the Key Vault.
+
+|API Endpoint| HTTP Operation | User Key Access | Admin Key Access
+| ---------- | -------------- | ------ | - |
+| /api/chat | POST | &check; | &check;
+| /api/generate | POST | &check; | &check;
+| /api/ps | POST | &check; | &check;
+| /api/show | POST | &check; | &check;
+| /api/tags | GET | &check; | &check;
+| /api/blobs | POST |   | &check;
+| /api/copy  | POST |   | &check;
+| /api/create | POST |   | &check;
+| /api/delete | DELETE |  | &check;
+| /api/embed | POST |  | &check;
+| /api/embeddings | POST |  | &check;
+| /api/pull | POST |  | &check;
+| /api/push | POST |  | &check;
+| /api/version | GET |  | &check;
+
+### Chainlit
+The chainlit container runs an [Chainlit](https://docs.chainlit.io/) server.
+
 ## Local Development
 
 ### Run the Server Locally
@@ -71,15 +101,20 @@ You *must* configure all the properties
    cd DeploymentScripts
    .\Build-Containers.ps1 -Environment <Environment Name>
    ```
-2. The servers will be available at `http://localhost:5000`
+2. The servers will be available through Docker
+   - Ollama will be available at: http://localhost:11434
+   - Ollama GUI will be available at: http://localhost:8080
+   - Ollama Proxy be available at: http://localhost
+   - Chainlit will be available at: http://localhost:8081
 
 ## Deploy to Azure
-
+This deployment will create the following infrastructure within your Azure environment. 
+![Deployed Infrastructure](Documentation\Media\Infrastructure.jpg "Infrastructure")
 1. Login to Azure:
    ```bash
    az login
    ```
-3. Deploy the resources:
+2. Deploy the resources:
    ```bash
     cd DeploymentScripts
    .\Deploy-ARMTemplates.ps1 -Environment <Environment Name>
@@ -90,3 +125,9 @@ You *must* configure all the properties
    - Deploy the containers
 
    Once this completes you will have an environment fully hosted within Azure with the Ollama, Ollama Proxy, Ollama GUI, and the chainlit applications
+### Redeploy Containers to Azure
+After the infrastructure is built, you can re-deploy changes you made to the containers by running the following command: 
+```bash
+ cd DeploymentScripts
+ .\Build-Containers.ps1 -Environment <Environment Name> -AzureDeployment $true
+ ```
