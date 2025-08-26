@@ -117,6 +117,8 @@ if (Test-Path -Path "../Configuration/$Environment.json")
     $upn = az containerapp env identity show --name $($EnvironmentSettings.ContainerAppsEnvironmentName) --resource-group $($EnvironmentSettings.ResourceGroupName) --query principalId -o tsv
     az role assignment $command --role "AcrPull" --assignee $upn --scope $scope --output none   
 
+    $ContainerRegistryAddress = $($EnvironmentSettings.ContainerRegistryName).toLower()+".azurecr.io"
+    
     if ($DeployInCloudShell -eq $true)
     {
         az acr build --image $ContainerRegistryAddress/ollama:ollama --registry $($EnvironmentSettings.ContainerRegistryName) --file ../Containers/ollama-DockerFile ../Containers
@@ -134,8 +136,7 @@ if (Test-Path -Path "../Configuration/$Environment.json")
     else {
         ./Build-Containers.ps1 -Environment $Environment -AzureDeployment $true 
     }    
-
-    $ContainerRegistryAddress = $($EnvironmentSettings.ContainerRegistryName).toLower()+".azurecr.io"
+    
     az deployment group $command --name $($EnvironmentSettings.ContainerAppLLM) `
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
         --template-file "../Infrastructure/Templates/ContainerApp.json" `
