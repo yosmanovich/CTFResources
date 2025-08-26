@@ -56,16 +56,16 @@ This project contains ARM templates for hosting several services within Azure, D
 
 Log into Azure via the portal. 
 Once in, open a Cloud Shell - this can be done by clicking the cloudshell button on the upper bar.
-![CLI](Documentation\Media\CLI.png "CLI")
+![CLI](Documentation/Media/CLI.png "CLI")
 At the Welcome to Azure Cloud Shell message, click *PowerShell* 
-![Welcome to Cloudshell](Documentation\Media\1.Welcome.png "Welcome to Cloudshell")
+![Welcome to Cloudshell](Documentation/Media/1.Welcome.png "Welcome to Cloudshell")
 
 At the Getting started screen, select *Mount storage account* and select your storage account subscription, click *Apply*
-![Select Subscription](Documentation\Media\2.SelectSubscription.png "Select Subscription")
+![Select Subscription](Documentation/Media/2.SelectSubscription.png "Select Subscription")
 
 At the Mount storage account screen, select *We will create a storage account for you* and click *Next*
 Note: If you have a storage account with a file share that you can use for your cloud shell, feel free to use that. The method we identified is the "easy" approach.
-![Select Storage](Documentation\Media\3.Storage.png "Select Storage")
+![Select Storage](Documentation/Media/3.Storage.png "Select Storage")
 
 Azure will provision a cloud shell and you will soon have a prompt.
 
@@ -138,7 +138,7 @@ The chainlit container runs an [Chainlit](https://docs.chainlit.io/) server.
 
 ## Deploy to Azure
 This deployment will create the following infrastructure within your Azure environment. 
-![Deployed Infrastructure](Documentation\Media\Infrastructure.jpg "Infrastructure")
+![Deployed Infrastructure](Documentation/Media/Infrastructure.jpg "Infrastructure")
 1. Login to Azure:
    ```bash
    az login
