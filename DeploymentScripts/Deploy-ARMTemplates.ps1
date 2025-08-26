@@ -4,11 +4,40 @@ param(
     [string]$Environment = "Dev",
     [Parameter()]    
     [ValidateSet('$command','what-if')]
-    [string]$command = "create"
+    [string]$command = "create",
+    [switch]$DeployInCloudShell = $false,
+    [switch]$InitializeEnvironmentFile = $false
 )
     
 function Get-RandomKey {
-    return [Guid]::NewGuid().ToString('N').Substring(0, 16)
+param(
+    [int]$Length = 16
+)
+    return [Guid]::NewGuid().ToString('N').Substring(0, $Length)
+}
+
+if ($InitializeEnvironmentFile -and (-not (Test-Path -Path "../Configuration/$Environment.json")))
+{
+    Write-Host "Initializing Environment File [../Configuration/$Environment.json]"
+    
+    $delta = Get-RandomKey -Length 3
+
+    Write-Host "Resources will be deployed to East US to the resource group named `"AI-CTF-$delta`""
+    
+    "{" | Out-File -FilePath "../Configuration/$Environment.json"
+    "   `"Environment`": `"AzureCloud`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
+    "   `"Location`": `"East US`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
+    "   `"ResourceGroupName`": `"AI-CTF-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
+    "   `"KeyVaultName`": `"ai-ctf-kv-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
+    "   `"LogAnalyticsName`": `"ai-ctf-log-analytics-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
+    "   `"StorageAccountName`": `"aictfstorage-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
+    "   `"ContainerAppsEnvironmentName`":`"AICTF-environment-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
+    "   `"ContainerRegistryName`":`"AICTF-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
+    "   `"ContainerAppLLM`":`"ollama-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
+    "   `"ContainerAppGUI`":`"ollama-gui-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
+    "   `"ContainerChainlit`":`"chainlit-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
+    "   `"ContainerAppProxy`":`"ollama-proxy-$delta`"" | Out-File -FilePath "../Configuration/$Environment.json" -Append
+    "}" | Out-File -FilePath "../Configuration/$Environment.json" -Append  
 }
 
 if (Test-Path -Path "../Configuration/$Environment.json")
@@ -88,7 +117,23 @@ if (Test-Path -Path "../Configuration/$Environment.json")
     $upn = az containerapp env identity show --name $($EnvironmentSettings.ContainerAppsEnvironmentName) --resource-group $($EnvironmentSettings.ResourceGroupName) --query principalId -o tsv
     az role assignment $command --role "AcrPull" --assignee $upn --scope $scope --output none   
 
-    ./Build-Containers.ps1 -Environment $Environment -AzureDeployment $true 
+    if ($DeployInCloudShell -eq $true)
+    {
+        az acr build --image $ContainerRegistryAddress/ollama:ollama --registry $($EnvironmentSettings.ContainerRegistryName) --file ../Containers/ollama-DockerFile ../Containers
+        Write-Host "Ollama Container Created"
+
+        az acr build --image $ContainerRegistryAddress/ollama-proxy:ollama-proxy --registry $($EnvironmentSettings.ContainerRegistryName) --file ../Containers/ollama-proxy-DockerFile ../Containers
+        Write-Host "Ollama Proxy Container Created"
+
+        az acr build --image $ContainerRegistryAddress/chainlit:chainlit     --registry $($EnvironmentSettings.ContainerRegistryName) --file ../Containers/chainlit-DockerFile ../Containers
+        Write-Host "Chainlit Container Created"
+
+        az acr build --image $ContainerRegistryAddress/ollama-gui:ollama-gui --registry $($EnvironmentSettings.ContainerRegistryName) --file ../Containers/ollama-gui-DockerFile ../Containers
+        Write-Host "Ollama GUI Container Created"
+    }
+    else {
+        ./Build-Containers.ps1 -Environment $Environment -AzureDeployment $true 
+    }    
 
     $ContainerRegistryAddress = $($EnvironmentSettings.ContainerRegistryName).toLower()+".azurecr.io"
     az deployment group $command --name $($EnvironmentSettings.ContainerAppLLM) `

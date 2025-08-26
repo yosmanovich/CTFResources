@@ -50,6 +50,35 @@ This project contains ARM templates for hosting several services within Azure, D
 - [AZ CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?view=azure-cli-latest)
 - [Visual Studio Code](https://code.visualstudio.com/)
 
+## I just want to get this running
+
+### Open a Cloudshell in the Azure Portal
+
+Log into Azure via the portal. 
+Once in, open a Cloud Shell - this can be done by clicking the cloudshell button on the upper bar.
+![CLI](Documentation\Media\CLI.png "CLI")
+At the Welcome to Azure Cloud Shell message, click *PowerShell* 
+![Welcome to Cloudshell](Documentation\Media\1.Welcome.png "Welcome to Cloudshell")
+
+At the Getting started screen, select *Mount storage account* and select your storage account subscription, click *Apply*
+![Select Subscription](Documentation\Media\2.SelectSubscription.png "Select Subscription")
+
+At the Mount storage account screen, select *We will create a storage account for you* and click *Next*
+Note: If you have a storage account with a file share that you can use for your cloud shell, feel free to use that. The method we identified is the "easy" approach.
+![Select Storage](Documentation\Media\3.Storage.png "Select Storage")
+
+Azure will provision a cloud shell and you will soon have a prompt.
+
+### Clone the repository and Deploy the resources
+Running the 
+   ```bash
+   cd clouddrive
+   git clone https://github.com/yosmanovich/CTFResources.git
+   cd CTFResources/DeploymentScripts
+   .\Deploy-ARMTemplates.ps1 -DeployInCloudShell -InitializeEnvironmentFile
+   ```
+
+
 ## Create and populate the Configuration file
 Copy the Configuration\Environment.json file to Configuration\Dev.json (or Configuration\Test.json or Configuration\Staging.json or Configuration\Prod.json).
 
