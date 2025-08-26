@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "containerRegistry_name": {
-            "value": "AICTF"
+            "value": ""
         },                
         "tags": {
             "value": {

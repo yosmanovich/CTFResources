@@ -20,7 +20,7 @@ if ($InitializeEnvironmentFile -and (-not (Test-Path -Path "../Configuration/$En
 {
     Write-Host "Initializing Environment File [../Configuration/$Environment.json]"
     
-    $delta = $([char](Get-Random -Minimum 97 -Maximum 122) + [char](Get-Random -Minimum 97 -Maximum 122) + [char](Get-Random -Minimum 97 -Maximum 122))
+    $delta = $([char](Get-Random -Minimum 97 -Maximum 122) + [char](Get-Random -Minimum 97 -Maximum 122) + [char](Get-Random -Minimum 97 -Maximum 122)).toLower()
     Write-Host "Resources will be deployed to East US to the resource group named `"AI-CTF-$delta`""
     
     "{" | Out-File -FilePath "../Configuration/$Environment.json"
@@ -29,9 +29,9 @@ if ($InitializeEnvironmentFile -and (-not (Test-Path -Path "../Configuration/$En
     "   `"ResourceGroupName`": `"AI-CTF-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
     "   `"KeyVaultName`": `"ai-ctf-kv-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
     "   `"LogAnalyticsName`": `"ai-ctf-log-analytics-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
-    "   `"StorageAccountName`": `"aictfstorage-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
+    "   `"StorageAccountName`": `"aictfstorage$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
     "   `"ContainerAppsEnvironmentName`":`"AICTF-environment-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
-    "   `"ContainerRegistryName`":`"AICTF-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
+    "   `"ContainerRegistryName`":`"AICTF$($delta.ToUpper())`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
     "   `"ContainerAppLLM`":`"ollama-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
     "   `"ContainerAppGUI`":`"ollama-gui-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
     "   `"ContainerChainlit`":`"chainlit-$delta`"," | Out-File -FilePath "../Configuration/$Environment.json" -Append
@@ -95,6 +95,7 @@ if (Test-Path -Path "../Configuration/$Environment.json")
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
         --template-file "../Infrastructure/Templates/ContainerRegistry.json" `
         --parameters "../Infrastructure/Parameters/ContainerRegistry.parameters.json" `
+        --parameters "containerRegistry_name=$($EnvironmentSettings.ContainerRegistryName)"  `
         --output none
     Write-Host "Container Registry provisioned"
 
