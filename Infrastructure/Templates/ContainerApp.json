@@ -116,9 +116,9 @@
                 "template": {
                     "containers": [
                         {
-                            "image": "[concat(parameters('registry'), '/', parameters('containerapp_name'), ':', parameters('containerapp_name'))]",
+                            "image": "[concat(parameters('registry'), '/', parameters('containerimage_name'), ':', parameters('containerimage_name'))]",
                             "imageType": "ContainerImage",
-                            "name": "[parameters('containerapp_name')]",
+                            "name": "[parameters('containerimage_name')]",
                             "env":  "[parameters('env')]",
                             "resources": {
                                 "cpu": "[parameters('cpu')]",
