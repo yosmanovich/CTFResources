@@ -118,7 +118,7 @@ if (Test-Path -Path "../Configuration/$Environment.json")
     az role assignment $command --role "AcrPull" --assignee $upn --scope $scope --output none   
 
     $ContainerRegistryAddress = $($EnvironmentSettings.ContainerRegistryName).toLower()+".azurecr.io"
-    
+
     if ($DeployInCloudShell -eq $true)
     {
         az acr build --image $ContainerRegistryAddress/ollama:ollama --registry $($EnvironmentSettings.ContainerRegistryName) --file ../Containers/ollama-DockerFile ../Containers
@@ -140,7 +140,7 @@ if (Test-Path -Path "../Configuration/$Environment.json")
     az deployment group $command --name $($EnvironmentSettings.ContainerAppLLM) `
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
         --template-file "../Infrastructure/Templates/ContainerApp.json" `
-        --parameters "../Infrastructure/Parameters/ContainerApp.$($EnvironmentSettings.ContainerAppLLM).parameters.json" `
+        --parameters "../Infrastructure/Parameters/ContainerApp.ollama.parameters.json" `
         --parameters "containerapp_name=$($EnvironmentSettings.ContainerAppLLM)" `
         --parameters "managedenvironment_name=$($EnvironmentSettings.ContainerAppsEnvironmentName)" `
         --parameters "registry=$ContainerRegistryAddress" `
@@ -150,7 +150,7 @@ if (Test-Path -Path "../Configuration/$Environment.json")
     az deployment group $command --name "ContainerApp" `
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
         --template-file "../Infrastructure/Templates/ContainerApp.json" `
-        --parameters "../Infrastructure/Parameters/ContainerApp.$($EnvironmentSettings.ContainerAppGUI).parameters.json" `
+        --parameters "../Infrastructure/Parameters/ContainerApp.ollama-gui.parameters.json" `
         --parameters "containerapp_name=$($EnvironmentSettings.ContainerAppGUI)" `
         --parameters "managedenvironment_name=$($EnvironmentSettings.ContainerAppsEnvironmentName)" `
         --parameters "registry=$ContainerRegistryAddress" `
@@ -160,7 +160,7 @@ if (Test-Path -Path "../Configuration/$Environment.json")
     az deployment group $command --name $($EnvironmentSettings.ContainerChainlit)`
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
         --template-file "../Infrastructure/Templates/ContainerApp.json" `
-        --parameters "../Infrastructure/Parameters/ContainerApp.$($EnvironmentSettings.ContainerChainlit).parameters.json" `
+        --parameters "../Infrastructure/Parameters/ContainerApp.chainlit.parameters.json" `
         --parameters "containerapp_name=$($EnvironmentSettings.ContainerChainlit)" `
         --parameters "managedenvironment_name=$($EnvironmentSettings.ContainerAppsEnvironmentName)" `
         --parameters "registry=$ContainerRegistryAddress" `
@@ -170,7 +170,7 @@ if (Test-Path -Path "../Configuration/$Environment.json")
     az deployment group $command --name $($EnvironmentSettings.ContainerAppProxy)`
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
         --template-file "../Infrastructure/Templates/ContainerApp.json" `
-        --parameters "../Infrastructure/Parameters/ContainerApp.$($EnvironmentSettings.ContainerAppProxy).parameters.json" `
+        --parameters "../Infrastructure/Parameters/ContainerApp.ollama-proxy.parameters.json" `
         --parameters "containerapp_name=$($EnvironmentSettings.ContainerAppProxy)" `
         --parameters "managedenvironment_name=$($EnvironmentSettings.ContainerAppsEnvironmentName)" `
         --parameters "registry=$ContainerRegistryAddress" `
