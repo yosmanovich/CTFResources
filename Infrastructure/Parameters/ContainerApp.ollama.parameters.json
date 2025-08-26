@@ -6,6 +6,9 @@
     "containerapp_name": {
         "value": ""
     },
+    "containerimage_name": {
+        "value": "ollama-proxy"
+    },        
     "managedenvironment_name": {
         "value": ""
     },

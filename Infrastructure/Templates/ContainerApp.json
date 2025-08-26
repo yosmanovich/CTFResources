@@ -6,6 +6,10 @@
             "defaultValue": "",
             "type": "string"
         },
+        "containerimage_name": {
+            "defaultValue": "",
+            "type": "string"
+        },        
         "managedenvironment_name": {
             "defaultValue": "",
             "type": "string"

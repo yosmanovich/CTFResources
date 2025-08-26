@@ -6,6 +6,9 @@
     "containerapp_name": {
         "value": ""
     },
+    "containerimage_name": {
+        "value": "ollama-gui"
+    },        
     "managedenvironment_name": {
         "value": ""
     },
