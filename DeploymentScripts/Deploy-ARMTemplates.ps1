@@ -107,7 +107,9 @@ if (Test-Path -Path "../Configuration/$Environment.json")
         --parameters "../Infrastructure/Parameters/ContainerApp.$($EnvironmentSettings.ContainerAppGUI).parameters.json" `
         --parameters "containerapp_name=$($EnvironmentSettings.ContainerAppGUI)" `
         --parameters "managedenvironment_name=$($EnvironmentSettings.ContainerAppsEnvironmentName)" `
-        --parameters "registry=$ContainerRegistryAddress"
+        --parameters "registry=$ContainerRegistryAddress" `
+        --output none
+    Write-Host "Ollama GUI container app provisioned"
 
     az deployment group $command --name $($EnvironmentSettings.ContainerChainlit)`
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
@@ -157,8 +159,8 @@ if (Test-Path -Path "../Configuration/$Environment.json")
         --output none
     
     Write-Host "Ollama Proxy API Keys:"
-    $requiredSecrets | ForEach-Object {
-        Write-Host "$_ : $requiredSecrets[$_]"
+    foreach ($key in $requiredSecrets.Keys) {
+        Write-Host "$key : $($requiredSecrets[$key])"
     }
 }
 else
