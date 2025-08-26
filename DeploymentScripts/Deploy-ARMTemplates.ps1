@@ -20,8 +20,7 @@ if ($InitializeEnvironmentFile -and (-not (Test-Path -Path "../Configuration/$En
 {
     Write-Host "Initializing Environment File [../Configuration/$Environment.json]"
     
-    $delta = Get-RandomKey -Length 3
-
+    $delta = $([char](Get-Random -Minimum 97 -Maximum 122) + [char](Get-Random -Minimum 97 -Maximum 122) + [char](Get-Random -Minimum 97 -Maximum 122))
     Write-Host "Resources will be deployed to East US to the resource group named `"AI-CTF-$delta`""
     
     "{" | Out-File -FilePath "../Configuration/$Environment.json"
@@ -50,6 +49,7 @@ if (Test-Path -Path "../Configuration/$Environment.json")
     if ($null -eq $resourceGroupName)
     {
         az group $command --name $($EnvironmentSettings.ResourceGroupName) --location $($EnvironmentSettings.Location) --output none
+        Write-Host "Resource Group created"
     }
 
     az deployment group $command --name "keyvault" `
@@ -63,22 +63,7 @@ if (Test-Path -Path "../Configuration/$Environment.json")
     $scope = az keyvault show --resource-group  $($EnvironmentSettings.ResourceGroupName) --name $($EnvironmentSettings.KeyVaultName) --query id -o tsv
 
     $upn = az ad signed-in-user show --query id -o tsv
-    az role assignment $command --role  "Key Vault Secrets Officer" --assignee $upn --scope $scope --output none
-    
-    $requiredSecrets = @{
-       "OLLAMA-ADMIN-KEY" = "Not Set"
-       "OLLAMA-USER-KEY"  = "Not Set"
-    }
-
-    $secrets = az keyvault secret list --vault-name $($EnvironmentSettings.KeyVaultName) --query "[].name" -o tsv
-    $keys = @($requiredSecrets.Keys)
-    $keys | ForEach-Object {    
-        if ($secrets -notcontains $_)
-        {
-            $requiredSecrets[$_] = Get-RandomKey
-            az keyvault secret set --vault-name $($EnvironmentSettings.KeyVaultName) --name $_ --value $requiredSecrets[$_] --output none
-        }
-    }
+    az role assignment $command --role  "Key Vault Secrets Officer" --assignee $upn --scope $scope --output none    
 
     az deployment group $command --name "storage" `
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
@@ -112,6 +97,20 @@ if (Test-Path -Path "../Configuration/$Environment.json")
         --parameters "../Infrastructure/Parameters/ContainerRegistry.parameters.json" `
         --output none
     Write-Host "Container Registry provisioned"
+
+    $requiredSecrets = @{
+       "OLLAMA-ADMIN-KEY" = "Not Set"
+       "OLLAMA-USER-KEY"  = "Not Set"
+    }
+    $secrets = az keyvault secret list --vault-name $($EnvironmentSettings.KeyVaultName) --query "[].name" -o tsv
+    $keys = @($requiredSecrets.Keys)
+    $keys | ForEach-Object {    
+        if ($secrets -notcontains $_)
+        {
+            $requiredSecrets[$_] = Get-RandomKey
+            az keyvault secret set --vault-name $($EnvironmentSettings.KeyVaultName) --name $_ --value $requiredSecrets[$_] --output none
+        }
+    }
 
     $scope = az acr show --resource-group  $($EnvironmentSettings.ResourceGroupName) --name $($EnvironmentSettings.ContainerRegistryName) --query id -o tsv
     $upn = az containerapp env identity show --name $($EnvironmentSettings.ContainerAppsEnvironmentName) --resource-group $($EnvironmentSettings.ResourceGroupName) --query principalId -o tsv
