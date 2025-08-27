@@ -36,20 +36,7 @@
     },    
     "env": 
     {
-      "value": [
-        {
-          "name": "OLLAMA_BASE_URL",
-          "value": "http://ollama"
-        },
-        {
-          "name": "USER_KEY",
-          "secretRef": "user-key"
-        },
-        {
-          "name": "ADMIN_KEY",
-          "secretRef": "admin-key"
-        }
-      ]
+      "value": []
     }
   }
 }

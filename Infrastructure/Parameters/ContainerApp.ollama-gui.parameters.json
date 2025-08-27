@@ -23,12 +23,7 @@
     },
     "env": 
     {
-      "value": [
-        {
-          "name": "OLLAMA_API_BASE_URL",
-          "value": "http://ollama/api"
-        }
-      ]
+      "value": []
     },     
     "volume_mounts":{
       "value": [

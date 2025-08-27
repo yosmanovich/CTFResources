@@ -23,20 +23,7 @@
     },
     "env": 
     {
-      "value": [
-        {
-          "name": "API_KEY",
-          "value": "FAKE_KEY"
-        },
-        {
-          "name": "BASE_URL",
-          "value": "http://ollama/v1"
-        },                
-        {
-          "name": "MODEL",
-          "value": "TinyLlama:latest"
-        }
-      ]
+      "value": []
     }
   }
 }

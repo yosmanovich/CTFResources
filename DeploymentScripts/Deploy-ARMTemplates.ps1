@@ -147,6 +147,12 @@ if (Test-Path -Path "../Configuration/$Environment.json")
         --output none
     Write-Host "Ollama container app provisioned"
 
+    $env =  @{
+      value =@(
+         @{name="OLLAMA_API_BASE_URL"; value="http://$($EnvironmentSettings.ContainerAppLLM)/api"}
+      )
+    }
+
     az deployment group $command --name "ContainerApp" `
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
         --template-file "../Infrastructure/Templates/ContainerApp.json" `
@@ -154,8 +160,17 @@ if (Test-Path -Path "../Configuration/$Environment.json")
         --parameters "containerapp_name=$($EnvironmentSettings.ContainerAppGUI)" `
         --parameters "managedenvironment_name=$($EnvironmentSettings.ContainerAppsEnvironmentName)" `
         --parameters "registry=$ContainerRegistryAddress" `
+        --parameters "env=$(($env | ConvertTo-Json -Depth 10 -Compress) -replace '"', "'")" `
         --output none
     Write-Host "Ollama GUI container app provisioned"
+
+    $env =  @{
+      value =@(
+         @{name="API_KEY"; value="FAKE_KEY"}
+         @{name="BASE_URL"; value="http://$($EnvironmentSettings.ContainerAppLLM)/v1"}
+         @{name="MODEL"; value="TinyLlama:latest"}
+      )
+    }
 
     az deployment group $command --name $($EnvironmentSettings.ContainerChainlit)`
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
@@ -164,8 +179,17 @@ if (Test-Path -Path "../Configuration/$Environment.json")
         --parameters "containerapp_name=$($EnvironmentSettings.ContainerChainlit)" `
         --parameters "managedenvironment_name=$($EnvironmentSettings.ContainerAppsEnvironmentName)" `
         --parameters "registry=$ContainerRegistryAddress" `
+        --parameters "env=$(($env | ConvertTo-Json -Depth 10 -Compress) -replace '"', "'")" `
         --output none
     Write-Host "Chainlit container app provisioned"
+
+    $env =  @{
+      value =@(
+         @{name="OLLAMA_BASE_URL"; value="http://$($EnvironmentSettings.ContainerAppLLM)"}
+         @{name="USER_KEY"; value="user-key"}
+         @{name="ADMIN_KEY"; value="admin-key"}
+      )
+    }
 
     az deployment group $command --name $($EnvironmentSettings.ContainerAppProxy)`
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
@@ -173,6 +197,7 @@ if (Test-Path -Path "../Configuration/$Environment.json")
         --parameters "../Infrastructure/Parameters/ContainerApp.ollama-proxy.parameters.json" `
         --parameters "containerapp_name=$($EnvironmentSettings.ContainerAppProxy)" `
         --parameters "managedenvironment_name=$($EnvironmentSettings.ContainerAppsEnvironmentName)" `
+        --parameters "env=$(($env | ConvertTo-Json -Depth 10 -Compress) -replace '"', "'")" `
         --parameters "registry=$ContainerRegistryAddress" `
         --output none
 
