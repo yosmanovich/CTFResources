@@ -147,11 +147,9 @@ if (Test-Path -Path "../Configuration/$Environment.json")
         --output none
     Write-Host "Ollama container app provisioned"
 
-    $env =  @{
-      value =@(
+    $env =  ,@(
          @{name="OLLAMA_API_BASE_URL"; value="http://$($EnvironmentSettings.ContainerAppLLM)/api"}
-      )
-    }
+      )    
 
     az deployment group $command --name "ContainerApp" `
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
@@ -164,13 +162,11 @@ if (Test-Path -Path "../Configuration/$Environment.json")
         --output none
     Write-Host "Ollama GUI container app provisioned"
 
-    $env =  @{
-      value =@(
+    $env =  ,@(
          @{name="API_KEY"; value="FAKE_KEY"}
          @{name="BASE_URL"; value="http://$($EnvironmentSettings.ContainerAppLLM)/v1"}
          @{name="MODEL"; value="TinyLlama:latest"}
-      )
-    }
+      )    
 
     az deployment group $command --name $($EnvironmentSettings.ContainerChainlit)`
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
@@ -183,13 +179,11 @@ if (Test-Path -Path "../Configuration/$Environment.json")
         --output none
     Write-Host "Chainlit container app provisioned"
 
-    $env =  @{
-      value =@(
+    $env = ,@(
          @{name="OLLAMA_BASE_URL"; value="http://$($EnvironmentSettings.ContainerAppLLM)"}
          @{name="USER_KEY"; value="user-key"}
          @{name="ADMIN_KEY"; value="admin-key"}
       )
-    }
 
     az deployment group $command --name $($EnvironmentSettings.ContainerAppProxy)`
         --resource-group $($EnvironmentSettings.ResourceGroupName) `
