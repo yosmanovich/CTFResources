@@ -121,16 +121,16 @@ if (Test-Path -Path "../Configuration/$Environment.json")
 
     if ($DeployInCloudShell -eq $true)
     {
-        az acr build --image $ContainerRegistryAddress/ollama:ollama --registry $($EnvironmentSettings.ContainerRegistryName) --file ../Containers/ollama-DockerFile ../Containers
+        az acr build --image $ContainerRegistryAddress/ollama:ollama --registry $($EnvironmentSettings.ContainerRegistryName) --file ../Containers/ollama-Dockerfile ../Containers
         Write-Host "Ollama Container Created"
 
-        az acr build --image $ContainerRegistryAddress/ollama-proxy:ollama-proxy --registry $($EnvironmentSettings.ContainerRegistryName) --file ../Containers/ollama-proxy-DockerFile ../Containers
+        az acr build --image $ContainerRegistryAddress/ollama-proxy:ollama-proxy --registry $($EnvironmentSettings.ContainerRegistryName) --file ../Containers/ollama-proxy-Dockerfile ../Containers
         Write-Host "Ollama Proxy Container Created"
 
-        az acr build --image $ContainerRegistryAddress/chainlit:chainlit     --registry $($EnvironmentSettings.ContainerRegistryName) --file ../Containers/chainlit-DockerFile ../Containers
+        az acr build --image $ContainerRegistryAddress/chainlit:chainlit     --registry $($EnvironmentSettings.ContainerRegistryName) --file ../Containers/chainlit-Dockerfile ../Containers
         Write-Host "Chainlit Container Created"
 
-        az acr build --image $ContainerRegistryAddress/ollama-gui:ollama-gui --registry $($EnvironmentSettings.ContainerRegistryName) --file ../Containers/ollama-gui-DockerFile ../Containers
+        az acr build --image $ContainerRegistryAddress/ollama-gui:ollama-gui --registry $($EnvironmentSettings.ContainerRegistryName) --file ../Containers/ollama-gui-Dockerfile ../Containers
         Write-Host "Ollama GUI Container Created"
     }
     else {
